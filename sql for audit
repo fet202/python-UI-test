@@ -1,0 +1,3 @@
+select * from audit.audit
+  WHERE audit."user" =  ('357')
+ORDER BY created_at DESC
