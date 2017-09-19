@@ -1,0 +1,8 @@
+SELECT * FROM view_incoming_documents
+WHERE doc_type_code LIKE ('claim_other_document')
+      AND doc_source not like ('SF')
+      AND doc_state LIKE ('ACCEPTED')
+      or doc_state LIKE ('FIELD_CASE')
+
+
+
