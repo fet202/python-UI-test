@@ -1,0 +1,2 @@
+SELECT * from service_document.document WHERE state IN ('FILED_CASE', 'ACCEPTED') AND data ->> 'is_deleted' = 'false'
+                                              AND is_doc_typeof(document_type_guid_revision,'claim_start_construction')
