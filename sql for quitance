@@ -1,0 +1,6 @@
+select *
+from business_entity.business_entity
+where 1=1
+  and upper(actual_range) IS NULL
+  and is_be_typeof(business_entity_type_guid, 'quittance')
+  and data ->> 'is_deleted' = 'true' IS NOT TRUE
