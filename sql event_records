@@ -1,0 +1,14 @@
+with er as ( SELECT jsonb_array_elements(ii.data -> 'event_records') as value
+   FROM business_entity.business_entity AS ii
+   WHERE
+     upper(ii.actual_range) IS NULL
+     AND is_be_typeof(ii.business_entity_type_guid, 'inspection_item')
+     AND ii.guid = 'ff7c4044-eccf-4fd8-a915-9b48b742f6b0'
+)
+
+select
+  *
+from er
+where
+  er.value->'dat'->0->'guid' is null
+  or er.value->'mov'->0->'guid' is null
