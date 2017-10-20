@@ -1,0 +1,81 @@
+import time
+from selenium import webdriver
+
+def wait_for_angular(self):
+    wait_for_angular_with_callback_v2(self)
+    wait_for_angular_with_callback_v2(self)
+
+def is_angular_stable(self):
+    self.wait_counter = 0
+    while True:
+        time.sleep(0.5)
+        self.wait_counter +=1
+        if self.driver.execute_script("return !!window.angular") == True:
+            break
+        if self.wait_counter > 30: return False
+    angular_stable_validation(self)
+    self.wait_counter = 0
+    while True:
+        time.sleep(0.5)
+        self.wait_counter += 1
+        if self.driver.execute_script("return window.angularReady") == True or self.wait_counter >= 30:
+            break
+    time.sleep(2)
+    return True
+
+def angular_stable_validation(self):
+    self.driver.execute_script('var imspage = document.querySelector("html"); window.angularReady = false; function ready(fn) { if (document.readyState !== "loading"){ fn(); } else if (document.addEventListener) { document.addEventListener("DOMContentLoaded", fn); } else { document.attachEvent("onreadystatechange", function() { if (document.readyState !== "loading") fn(); }); } } ready(function () { if (window.angular && window.angular.getTestability) { window.angular.getTestability(imspage).whenStable(function() { window.angularReady = true; }); } else { return window.angularReady; } }); ')
+
+def angular_ready_validation(self):
+    self.wait_counter = 0
+    while True:
+        time.sleep(0.5)
+        self.wait_counter +=1
+        if self.driver.execute_script("return !!window.angular") == True:
+            break
+        if self.wait_counter > 30: return False
+    time.sleep(2)
+    self.wait_counter = 0
+    while True:
+        time.sleep(.5)
+        self.wait_counter += 1
+        if self.driver.execute_script("return window.angular.element('html').injector().get('$http').pendingRequests.length") == 0 or self.wait_counter >= 15:
+            break
+    time.sleep(1)
+    return True
+
+def wait_for_angular_with_callback_old(self):
+    ready = self.driver.execute_script("return !!window.angular")
+    count = 0
+    while ready == False:
+        ready = self.driver.execute_script("return !!window.angular")
+        count = count + 1
+        if count > 30: return False
+    self.driver.set_script_timeout(30)
+    self.driver.execute_async_script("""
+        callback = arguments[arguments.length - 1];
+        window.angular.element('html').injector().get('$browser').notifyWhenNoOutstandingRequests(callback);""")
+    time.sleep(3)
+
+def wait_for_angular_with_callback_v2(self):
+    self.driver.set_script_timeout(30)
+    angular_ready = False;
+    self.wait_counter = 0
+    while angular_ready == False:
+        angular_ready = self.driver.execute_async_script("""
+            var callback = arguments[arguments.length - 1];
+            var el = document.querySelector('html');
+            if (!window.angular) {
+                callback('false')
+            }
+            if (angular.getTestability) {
+                angular.getTestability(el).whenStable(function(){callback('true')});
+            } else {
+                if (!angular.element(el).injector()) {
+                    callback('false')
+                }
+                var browser = angular.element(el).injector().get('$browser');
+                browser.notifyWhenNoOutstandingRequests(function(){callback('true')}); }""")
+        self.wait_counter += 1
+        if self.wait_counter > 30: return False
+    time.sleep(3)
