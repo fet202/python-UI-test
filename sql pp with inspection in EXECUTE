@@ -1,0 +1,12 @@
+SELECT
+  *
+FROM service_document.document as poi
+INNER JOIN business_entity.business_entity as i ON 1=1
+    AND upper(i.actual_range) IS NULL
+    AND is_be_typeof(i.business_entity_type_guid, 'inspection')
+    AND poi.guid = (i.data ->> 'parent_doc')::UUID
+WHERE 1 = 1
+      AND upper(poi.actual_range) IS NULL
+      AND is_doc_typeof(poi.document_type_guid_revision, 'program_of_inspection')
+      AND poi.data ->> 'state' = 'EXECUTED'
+      AND poi.data ->> 'is_deleted' = 'true' IS NOT TRUE;
